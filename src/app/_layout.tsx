@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react"
 import { ViewStyle } from "react-native"
 import { Slot, SplashScreen } from "expo-router"
-import { GestureHandlerRootView } from "react-native-gesture-handler"
 
 import { useInitialRootStore } from "@/models"
 import { useFonts } from "@expo-google-fonts/space-grotesk"
 import { customFontsToLoad } from "@/theme"
 import { initI18n } from "@/i18n"
 import { loadDateFnsLocale } from "@/utils/formatDate"
+import { useThemeProvider } from "@/utils/useAppTheme"
+import { KeyboardProvider } from "react-native-keyboard-controller"
 
 SplashScreen.preventAutoHideAsync()
 
@@ -27,6 +28,7 @@ export default function Root() {
 
   const [fontsLoaded, fontError] = useFonts(customFontsToLoad)
   const [isI18nInitialized, setIsI18nInitialized] = useState(false)
+  const { themeScheme, setThemeContextOverride, ThemeProvider } = useThemeProvider()
 
   useEffect(() => {
     initI18n()
@@ -51,10 +53,10 @@ export default function Root() {
   }
 
   return (
-    <GestureHandlerRootView style={$root}>
-      <Slot />
-    </GestureHandlerRootView>
+    <ThemeProvider value={{ themeScheme, setThemeContextOverride }}>
+      <KeyboardProvider>
+        <Slot />
+      </KeyboardProvider>
+    </ThemeProvider>
   )
 }
-
-const $root: ViewStyle = { flex: 1 }
